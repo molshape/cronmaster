@@ -8,7 +8,13 @@ import { Switch } from "@/app/_components/GlobalComponents/UIElements/Switch";
 import { CronExpressionHelper } from "@/app/_components/FeatureComponents/Scripts/CronExpressionHelper";
 import { SelectScriptModal } from "@/app/_components/FeatureComponents/Modals/SelectScriptModal";
 import { UserSwitcher } from "@/app/_components/FeatureComponents/User/UserSwitcher";
-import { PlusIcon, TerminalIcon, FileTextIcon, XIcon, FileArrowDownIcon } from "@phosphor-icons/react";
+import {
+  PlusIcon,
+  TerminalIcon,
+  FileTextIcon,
+  XIcon,
+  FileArrowDownIcon,
+} from "@phosphor-icons/react";
 import { getScriptContent } from "@/app/_server/actions/scripts";
 import { getHostScriptPath } from "@/app/_server/actions/scripts";
 import { useTranslations } from "next-intl";
@@ -45,8 +51,6 @@ export const CreateTaskModal = ({
   form,
   onFormChange,
 }: CreateTaskModalProps) => {
-  const [selectedScriptContent, setSelectedScriptContent] =
-    useState<string>("");
   const [isSelectScriptModalOpen, setIsSelectScriptModalOpen] = useState(false);
   const selectedScript = scripts.find((s) => s.id === form.selectedScriptId);
   const t = useTranslations();
@@ -54,10 +58,7 @@ export const CreateTaskModal = ({
   useEffect(() => {
     const loadScriptContent = async () => {
       if (selectedScript) {
-        const content = await getScriptContent(selectedScript.filename);
-        setSelectedScriptContent(content);
-      } else {
-        setSelectedScriptContent("");
+        await getScriptContent(selectedScript.filename);
       }
     };
 
@@ -125,10 +126,11 @@ export const CreateTaskModal = ({
               <button
                 type="button"
                 onClick={handleCustomCommand}
-                className={`p-4 rounded-lg transition-all ${!form.selectedScriptId
-                  ? "border-border border-2"
-                  : "border-border border"
-                  }`}
+                className={`p-4 rounded-lg transition-all ${
+                  !form.selectedScriptId
+                    ? "border-border border-2"
+                    : "border-border border"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <TerminalIcon className="h-5 w-5" />
@@ -146,10 +148,11 @@ export const CreateTaskModal = ({
               <button
                 type="button"
                 onClick={() => setIsSelectScriptModalOpen(true)}
-                className={`p-4 rounded-lg transition-all ${form.selectedScriptId
-                  ? "border-border border-2"
-                  : "border-border border"
-                  }`}
+                className={`p-4 rounded-lg transition-all ${
+                  form.selectedScriptId
+                    ? "border-border border-2"
+                    : "border-border border"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <FileTextIcon className="h-5 w-5" />
@@ -223,7 +226,7 @@ export const CreateTaskModal = ({
                       ? "/app/scripts/script_name.sh"
                       : "/usr/bin/command"
                   }
-                  className="w-full h-24 p-2 border border-border rounded bg-background0 text-foreground font-mono text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/20"
+                  className="w-full h-24 p-2 border border-border rounded bg-background0 text-foreground font-mono text-sm resize-y focus:outline-none focus:ring-1 focus:ring-primary/20"
                   required
                   readOnly={!!form.selectedScriptId}
                 />
@@ -254,7 +257,6 @@ export const CreateTaskModal = ({
             />
           </div>
 
-
           <div className="border border-border bg-muted/10 rounded-lg p-4">
             <div
               className="flex items-start gap-3 cursor-pointer"
@@ -278,7 +280,6 @@ export const CreateTaskModal = ({
               </div>
             </div>
           </div>
-
 
           <div className="flex justify-end gap-2 pt-3 border-t border-border">
             <Button
