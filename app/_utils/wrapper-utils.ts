@@ -2,6 +2,7 @@ import { existsSync, copyFileSync } from "fs";
 import path from "path";
 import { DATA_DIR } from "../_consts/file";
 import { getHostDataPath } from "../_server/actions/global";
+import { toShellArg, fromShellArg } from "./wrapper-utils-client";
 
 const sanitizeForFilesystem = (input: string): string => {
   return input
@@ -53,11 +54,13 @@ export const wrapCommandWithLogger = async (
 
   const logFolderName = generateLogFolderName(jobId, comment);
 
+  const safeCmd = toShellArg(command);
+
   if (isDocker) {
     const hostDataPath = await getHostDataPath();
     if (hostDataPath) {
       const hostWrapperPath = path.join(hostDataPath, "cron-log-wrapper.sh");
-      return `${hostWrapperPath} "${logFolderName}" ${command}`;
+      return `${hostWrapperPath} "${logFolderName}" ${safeCmd}`;
     }
     console.warn("Could not determine host data path, using container path");
   }
@@ -67,7 +70,7 @@ export const wrapCommandWithLogger = async (
     DATA_DIR,
     "cron-log-wrapper.sh"
   );
-  return `${localWrapperPath} "${logFolderName}" ${command}`;
+  return `${localWrapperPath} "${logFolderName}" ${safeCmd}`;
 };
 
 export const unwrapCommand = (command: string): string => {
@@ -76,7 +79,7 @@ export const unwrapCommand = (command: string): string => {
   const match = command.match(wrapperPattern);
 
   if (match && match[3]) {
-    return match[3];
+    return fromShellArg(match[3]);
   }
 
   return command;
