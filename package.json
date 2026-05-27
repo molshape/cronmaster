@@ -1,5 +1,5 @@
 {
-  "name": "cronjob-manager",
+  "name": "cronmaster",
   "version": "2.3.1",
   "private": true,
   "scripts": {
